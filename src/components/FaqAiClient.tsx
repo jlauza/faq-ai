@@ -1,7 +1,7 @@
 "use client";
 
-import { useFormState, useFormStatus } from 'react-dom';
-import React, { useEffect, useState, useRef } from 'react';
+import { useFormStatus } from 'react-dom';
+import React, { useActionState, useEffect, useState, useRef } from 'react';
 import { submitQuestion, type QuestionState, submitFeedback, type FeedbackState } from '@/app/actions';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -51,13 +51,13 @@ function FeedbackSubmitButton() {
 
 
 export function FaqAiClient() {
-  const [questionState, questionAction] = useFormState(submitQuestion, {});
+  const [questionState, questionAction] = useActionState(submitQuestion, {});
   const [currentQa, setCurrentQa] = useState<{ question: string; answer: string } | null>(null);
   const [feedbackGiven, setFeedbackGiven] = useState<'good' | 'bad' | null>(null);
   const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   
-  const [feedbackState, feedbackAction] = useFormState(submitFeedback, {});
+  const [feedbackState, feedbackAction] = useActionState(submitFeedback, {});
 
   useEffect(() => {
     if (questionState.answer && questionState.question) {
