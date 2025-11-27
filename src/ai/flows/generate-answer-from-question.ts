@@ -18,7 +18,7 @@ const GetRelevantInformationInputSchema = z.object({
     .describe('The question to retrieve relevant information for.'),
 });
 
-const GetRelevantInformationOutputSchema = z.string().describe('Relevant information retrieved from a data source.');
+const GetRelevantInformationOutputSchema = z.string().describe('A JSON string of relevant information retrieved from a data source.');
 
 const getRelevantInformation = ai.defineTool(
   {
@@ -32,12 +32,15 @@ const getRelevantInformation = ai.defineTool(
     // Simple keyword matching to find relevant FAQs.
     const questionWords = question.toLowerCase().split(/\s+/);
     const relevantFaqs = faqs.filter(faq => {
-        const faqWords = (faq.question + ' ' + faq.answer).toLowerCase().split(/\s+/);
-        return questionWords.some(word => faqWords.includes(word));
+        const faqContent = (faq.question + ' ' + faq.answer).toLowerCase();
+        return questionWords.some(word => faqContent.includes(word));
     });
+
     if (relevantFaqs.length === 0) {
       return "No relevant information found.";
     }
+
+    // Convert the array of objects to a JSON string for the AI model.
     return JSON.stringify(relevantFaqs);
   }
 );
@@ -68,7 +71,7 @@ const prompt = ai.definePrompt({
 Question: {{{question}}}
 
 Answer: `,
-  system: `You are an AI assistant that answers questions based on retrieved information. Use the getRelevantInformation tool to find the most up-to-date information related to the question. The information is a list of FAQs. Find the most relevant FAQ to answer the question. If no relevant FAQ is found, say that you could not find an answer.`, 
+  system: `You are an AI assistant that answers questions based on retrieved information. Use the getRelevantInformation tool to find the most up-to-date information related to the question. The information is a JSON string of FAQs. Find the most relevant FAQ to answer the question. If no relevant FAQ is found, say that you could not find an answer.`, 
 });
 
 const generateAnswerFromQuestionFlow = ai.defineFlow(
