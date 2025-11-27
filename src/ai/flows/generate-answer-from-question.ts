@@ -27,9 +27,18 @@ const getRelevantInformation = ai.defineTool(
     inputSchema: GetRelevantInformationInputSchema,
     outputSchema: GetRelevantInformationOutputSchema,
   },
-  async () => {
+  async ({question}) => {
     const faqs = await fetchFaqs();
-    return JSON.stringify(faqs);
+    // Simple keyword matching to find relevant FAQs.
+    const questionWords = question.toLowerCase().split(/\s+/);
+    const relevantFaqs = faqs.filter(faq => {
+        const faqWords = (faq.question + ' ' + faq.answer).toLowerCase().split(/\s+/);
+        return questionWords.some(word => faqWords.includes(word));
+    });
+    if (relevantFaqs.length === 0) {
+      return "No relevant information found.";
+    }
+    return JSON.stringify(relevantFaqs);
   }
 );
 
