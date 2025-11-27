@@ -1,0 +1,31 @@
+{
+  "entities": {
+    "faq": {
+      "title": "FAQ",
+      "description": "A frequently asked question and its answer.",
+      "type": "object",
+      "properties": {
+        "question": {
+          "type": "string",
+          "description": "The question."
+        },
+        "answer": {
+          "type": "string",
+          "description": "The answer to the question."
+        }
+      },
+      "required": ["question", "answer"]
+    }
+  },
+  "auth": {
+    "providers": []
+  },
+  "firestore": {
+    "/faqs/{faqId}": {
+      "schema": {
+        "$ref": "#/backend/entities/faq"
+      },
+      "description": "Collection of frequently asked questions."
+    }
+  }
+}

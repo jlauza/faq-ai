@@ -10,6 +10,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { fetchFaqs } from '@/lib/firebase';
 
 const GetRelevantInformationInputSchema = z.object({
   question: z
@@ -26,10 +27,9 @@ const getRelevantInformation = ai.defineTool(
     inputSchema: GetRelevantInformationInputSchema,
     outputSchema: GetRelevantInformationOutputSchema,
   },
-  async input => {
-    // TODO: Implement the retrieval logic here.
-    // This is a placeholder; replace with actual data retrieval.
-    return `This is dummy information related to: ${input.question}.  Replace with real implementation.`;
+  async () => {
+    const faqs = await fetchFaqs();
+    return JSON.stringify(faqs);
   }
 );
 
@@ -59,7 +59,7 @@ const prompt = ai.definePrompt({
 Question: {{{question}}}
 
 Answer: `,
-  system: `You are an AI assistant that answers questions based on retrieved information. Use the getRelevantInformation tool to find the most up-to-date information related to the question.`, 
+  system: `You are an AI assistant that answers questions based on retrieved information. Use the getRelevantInformation tool to find the most up-to-date information related to the question. The information is a list of FAQs. Find the most relevant FAQ to answer the question. If no relevant FAQ is found, say that you could not find an answer.`, 
 });
 
 const generateAnswerFromQuestionFlow = ai.defineFlow(
