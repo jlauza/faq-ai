@@ -11,8 +11,9 @@ export default function Home() {
           </div>
           <div>
             <h1 className="font-headline text-4xl font-bold tracking-tighter text-foreground sm:text-5xl">
-              AI Powered FAQ
+              FAQ-AI v.1
             </h1>
+            {/* <small className='text-sm text-center text-muted-foreground'>Created by Jayson Lauza</small> */}
             <p className="text-muted-foreground">Your intelligent question-answering assistant</p>
           </div>
         </header>

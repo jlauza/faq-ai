@@ -7,6 +7,20 @@
       "answer": "To reset your password, go to the login page and click the 'Forgot Password' link. You will receive an email with instructions on how to create a new password for your account.",
       "likes": 0,
       "dislikes": 0
+    },
+    {
+      "id": "faq-2",
+      "question": "How to send login credentials to the client in PAS (Profit Acceleration Software)?",
+      "answer": "Login to Profit Acceleration Software, search the client's name then click the 3 dots menu and click send credentials.",
+      "likes": 0,
+      "dislikes": 0
+    },
+    {
+      "id": "faq-3",
+      "question": "How can I add other eBooks to the website?",
+      "answer": "Upload the files to Media Storage, copy and then paste the link in the Customize Website form page 4.",
+      "likes": 0,
+      "dislikes": 0
     }
   ]
 }
