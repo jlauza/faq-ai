@@ -9,7 +9,8 @@ import {
 import {
   improveAnswerBasedOnFeedback,
 } from '@/ai/flows/improve-answer-based-on-feedback';
-import mockData from '@/lib/mock-faqs.json';
+import { updateFaqVote } from '@/lib/firebase/utils';
+import { revalidatePath } from 'next/cache';
 
 const questionSchema = z.object({
   question: z.string().min(10, 'Please ask a more detailed question.'),
@@ -53,7 +54,6 @@ export async function submitQuestion(
 
   try {
     const result = await generateAnswerFromQuestion({ question });
-    console.log(result);
     return { 
       question, 
       answer: result.answer,
@@ -108,25 +108,15 @@ export async function updateVote(id: string, type: 'like' | 'dislike') {
   const validatedFields = voteSchema.safeParse({ id, type });
   if (!validatedFields.success) {
     console.error('Invalid vote data');
-    return;
+    return { success: false, error: 'Invalid vote data' };
   }
 
-  // NOTE: This is for demonstration only. 
-  // In a real app, you would update a database here, not a JSON file.
-  // This will not persist across server restarts or multiple users.
-  const faq = mockData.faqs.find(f => f.id === id);
-  if (faq) {
-    if (type === 'like') {
-      faq.likes += 1;
-    } else {
-      faq.dislikes += 1;
-    }
-    console.log(`Updated vote for ${id}:`, faq);
-  } else {
-    console.log(`FAQ with id ${id} not found.`);
+  try {
+    await updateFaqVote(id, type);
+    revalidatePath('/'); // This tells Next.js to refresh the data on the page
+    return { success: true };
+  } catch (error) {
+    console.error(`Failed to update vote for ${id}:`, error);
+    return { success: false, error: 'Failed to update vote in database' };
   }
-
-  // Since we can't reliably write to the file system on the server,
-  // we're just logging the change. The UI has already updated instantly.
-  return { success: true };
 }

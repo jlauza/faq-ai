@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useActionState, useEffect, useRef, useState } from "react";
+import React, { useActionState, useEffect, useRef, useState, useOptimistic } from "react";
 import { useFormStatus } from "react-dom";
 import { submitQuestion, submitFeedback, updateVote } from "@/app/actions";
 import { Textarea } from "@/components/ui/textarea";
@@ -31,6 +31,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+
+/* ---------------- Question and Answer Type ---------------- */
+interface QA {
+  question: string;
+  answer: string;
+  id?: string;
+  likes?: number;
+  dislikes?: number;
+}
 
 /* ---------------- Buttons ---------------- */
 
@@ -90,13 +99,20 @@ export function FaqAiClient() {
     error: undefined,
   });
 
-  const [currentQa, setCurrentQa] = useState<{
-    question: string;
-    answer: string;
-    id?: string;
-    likes?: number;
-    dislikes?: number;
-  } | null>(null);
+  const [currentQa, setCurrentQa] = useState<QA | null>(null);
+  
+  const [optimisticQa, setOptimisticQa] = useOptimistic(
+    currentQa,
+    (state: QA | null, vote: { type: 'like' | 'dislike' }) => {
+      if (!state) return null;
+      if (vote.type === 'like') {
+        return { ...state, likes: (state.likes ?? 0) + 1 };
+      } else {
+        return { ...state, dislikes: (state.dislikes ?? 0) + 1 };
+      }
+    }
+  );
+
 
   const [feedbackGiven, setFeedbackGiven] =
     useState<"good" | "bad" | null>(null);
@@ -108,13 +124,14 @@ export function FaqAiClient() {
   /* ---- Handle Server Answer ---- */
   useEffect(() => {
     if (questionState?.question && questionState?.answer) {
-      setCurrentQa({
+      const newQa: QA = {
         question: questionState.question,
         answer: questionState.answer,
         id: questionState.id,
         likes: questionState.likes,
         dislikes: questionState.dislikes,
-      });
+      };
+      setCurrentQa(newQa);
       setFeedbackGiven(null);
       formRef.current?.reset();
     }
@@ -132,24 +149,27 @@ export function FaqAiClient() {
     }
   }, [feedbackState, currentQa]);
 
-  const handleVote = (type: 'like' | 'dislike') => {
-    if (!currentQa || !currentQa.id) return;
+  const handleVote = async (type: 'like' | 'dislike') => {
+    if (!currentQa || !currentQa.id || feedbackGiven) return;
 
-    // Prevent re-voting
-    if (feedbackGiven) return;
-
-    // Call server action to update the "database"
-    updateVote(currentQa.id, type);
+    // Optimistically update UI
+    startTransition(() => {
+      setOptimisticQa({ type });
+    });
 
     if (type === 'like') {
       setFeedbackGiven('good');
-      setCurrentQa(prev => prev ? {...prev, likes: (prev.likes ?? 0) + 1} : null);
     } else {
       setFeedbackGiven('bad');
-      setCurrentQa(prev => prev ? {...prev, dislikes: (prev.dislikes ?? 0) + 1} : null);
       setIsFeedbackDialogOpen(true);
     }
+    
+    // Call server action to update the database
+    await updateVote(currentQa.id, type);
   }
+
+  const { startTransition } = React;
+  const displayQa = optimisticQa || currentQa;
 
   return (
     <div className="w-full space-y-8">
@@ -188,7 +208,7 @@ export function FaqAiClient() {
       </Card>
 
       {/* ANSWER */}
-      {currentQa && (
+      {displayQa && (
         <Card className="w-full shadow-lg border-primary/20">
           <CardHeader>
             <CardTitle>AI Generated Answer</CardTitle>
@@ -198,7 +218,7 @@ export function FaqAiClient() {
             <div>
               <p className="font-semibold">Your Question:</p>
               <p className="text-muted-foreground">
-                {currentQa.question}
+                {displayQa.question}
               </p>
             </div>
 
@@ -207,7 +227,7 @@ export function FaqAiClient() {
             <div>
               <p className="font-semibold">Answer:</p>
               <p className="whitespace-pre-wrap">
-                {currentQa.answer}
+                {displayQa.answer}
               </p>
             </div>
 
@@ -227,7 +247,7 @@ export function FaqAiClient() {
                 >
                   <ThumbsUp className="h-5 w-5" />
                 </Button>
-                {currentQa.likes !== undefined && <span className="text-sm font-medium">{currentQa.likes}</span>}
+                {displayQa.likes !== undefined && <span className="text-sm font-medium tabular-nums">{displayQa.likes}</span>}
 
                 <Button
                   variant={
@@ -239,7 +259,7 @@ export function FaqAiClient() {
                 >
                   <ThumbsDown className="h-5 w-5" />
                 </Button>
-                {currentQa.dislikes !== undefined && <span className="text-sm font-medium">{currentQa.dislikes}</span>}
+                {displayQa.dislikes !== undefined && <span className="text-sm font-medium tabular-nums">{displayQa.dislikes}</span>}
               </div>
             </div>
           </CardContent>
@@ -283,7 +303,7 @@ export function FaqAiClient() {
                   <AlertDescription>
                     {feedbackState.error}
                   </AlertDescription>
-                </Alert>
+              </Alert>
               )}
 
               <DialogFooter>

@@ -1,0 +1,43 @@
+{
+  "entities": {
+    "faq": {
+      "title": "FAQ",
+      "description": "A frequently asked question and its answer.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The unique identifier for the FAQ."
+        },
+        "question": {
+          "type": "string",
+          "description": "The question."
+        },
+        "answer": {
+          "type": "string",
+          "description": "The answer to the question."
+        },
+        "likes": {
+          "type": "number",
+          "description": "The number of likes for the answer."
+        },
+        "dislikes": {
+          "type": "number",
+          "description": "The number of dislikes for the answer."
+        }
+      },
+      "required": ["id", "question", "answer", "likes", "dislikes"]
+    }
+  },
+  "auth": {
+    "providers": []
+  },
+  "firestore": {
+    "/faqs/{faqId}": {
+      "schema": {
+        "$ref": "#/backend/entities/faq"
+      },
+      "description": "Collection of frequently asked questions."
+    }
+  }
+}

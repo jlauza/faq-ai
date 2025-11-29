@@ -11,7 +11,7 @@ export default function Home() {
           </div>
           <div>
             <h1 className="font-headline text-4xl font-bold tracking-tighter text-foreground sm:text-5xl">
-              FAQ-AI
+              AI Powered FAQ
             </h1>
             <p className="text-muted-foreground">Your intelligent question-answering assistant</p>
           </div>

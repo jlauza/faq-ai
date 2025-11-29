@@ -11,7 +11,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import mockData from '@/lib/mock-faqs.json';
+import { fetchFaqs, getFaqById } from '@/lib/firebase/utils';
 
 const GetRelevantInformationInputSchema = z.object({
   question: z
@@ -29,20 +29,30 @@ const getRelevantInformation = ai.defineTool(
     outputSchema: GetRelevantInformationOutputSchema,
   },
   async ({question}) => {
-    const faqs = mockData.faqs;
-    // Simple keyword matching to find relevant FAQs.
-    const questionWords = question.toLowerCase().split(/\s+/);
-    const relevantFaqs = faqs.filter(faq => {
-        const faqContent = (faq.question + ' ' + faq.answer).toLowerCase();
-        return questionWords.some(word => faqContent.includes(word));
-    });
+    // In a real app, you might use a vector database for this.
+    // For this example, we'll fetch all FAQs and let the model find the best one.
+    try {
+      const faqs = await fetchFaqs();
+      if (!faqs || faqs.length === 0) {
+        return "No relevant information found in the database.";
+      }
+       // Simple keyword matching to find relevant FAQs.
+      const questionWords = question.toLowerCase().split(/\s+/);
+      const relevantFaqs = faqs.filter(faq => {
+          const faqContent = (faq.question + ' ' + faq.answer).toLowerCase();
+          return questionWords.some(word => faqContent.includes(word));
+      });
 
-    if (relevantFaqs.length === 0) {
-      return "No relevant information found.";
+      if (relevantFaqs.length === 0) {
+        return "No relevant information found.";
+      }
+      
+      // Convert the array of objects to a JSON string for the AI model.
+      return JSON.stringify(relevantFaqs);
+    } catch (error) {
+      console.error("Error fetching FAQs from Firestore:", error);
+      return "Failed to retrieve information from the database.";
     }
-
-    // Convert the array of objects to a JSON string for the AI model.
-    return JSON.stringify(relevantFaqs);
   }
 );
 
@@ -91,17 +101,27 @@ const generateAnswerFromQuestionFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await prompt(input);
-    if (!output) {
-      throw new Error('AI did not return an output');
+    if (!output || !output.sourceId) {
+      // If the AI can't find an answer, return its response directly.
+      return {
+        answer: output?.answer || "I'm sorry, but I couldn't find an answer to your question in the available information.",
+      };
     }
 
-    const sourceFaq = mockData.faqs.find(faq => faq.id === output.sourceId);
-
-    return {
-      answer: output.answer,
-      id: sourceFaq?.id,
-      likes: sourceFaq?.likes,
-      dislikes: sourceFaq?.dislikes,
-    };
+    try {
+      const sourceFaq = await getFaqById(output.sourceId);
+      return {
+        answer: output.answer,
+        id: sourceFaq?.id,
+        likes: sourceFaq?.likes,
+        dislikes: sourceFaq?.dislikes,
+      };
+    } catch (error) {
+      console.error("Error fetching source FAQ by ID:", error);
+      // Fallback to the AI's answer even if we can't get the vote counts
+      return {
+        answer: output.answer,
+      };
+    }
   }
 );
