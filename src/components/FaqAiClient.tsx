@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useActionState, useEffect, useRef, useState } from "react";
@@ -79,6 +80,9 @@ export function FaqAiClient() {
   const [questionState, questionAction] = useActionState(submitQuestion, {
     question: undefined,
     answer: undefined,
+    id: undefined,
+    likes: undefined,
+    dislikes: undefined,
     error: undefined,
   });
   const [feedbackState, feedbackAction] = useActionState(submitFeedback, {
@@ -89,6 +93,9 @@ export function FaqAiClient() {
   const [currentQa, setCurrentQa] = useState<{
     question: string;
     answer: string;
+    id?: string;
+    likes?: number;
+    dislikes?: number;
   } | null>(null);
 
   const [feedbackGiven, setFeedbackGiven] =
@@ -104,6 +111,9 @@ export function FaqAiClient() {
       setCurrentQa({
         question: questionState.question,
         answer: questionState.answer,
+        id: questionState.id,
+        likes: questionState.likes,
+        dislikes: questionState.dislikes,
       });
       setFeedbackGiven(null);
       formRef.current?.reset();
@@ -121,6 +131,24 @@ export function FaqAiClient() {
       setFeedbackGiven("good");
     }
   }, [feedbackState, currentQa]);
+
+  const handleVote = (type: 'like' | 'dislike') => {
+    if (!currentQa) return;
+
+    // Prevent re-voting
+    if (feedbackGiven) return;
+
+    if (type === 'like') {
+      setFeedbackGiven('good');
+      setCurrentQa(prev => prev ? {...prev, likes: (prev.likes ?? 0) + 1} : null);
+    } else {
+      setFeedbackGiven('bad');
+      setCurrentQa(prev => prev ? {...prev, dislikes: (prev.dislikes ?? 0) + 1} : null);
+      setIsFeedbackDialogOpen(true);
+    }
+    // Here you would typically call a server action to persist the vote
+    // For now, we just update the local state.
+  }
 
   return (
     <div className="w-full space-y-8">
@@ -189,27 +217,28 @@ export function FaqAiClient() {
                 Was this answer helpful?
               </p>
 
-              <div className="flex gap-2">
+              <div className="flex items-center gap-2">
                 <Button
                   variant={feedbackGiven === "good" ? "default" : "outline"}
                   size="icon"
-                  onClick={() => setFeedbackGiven("good")}
+                  onClick={() => handleVote('like')}
+                  disabled={feedbackGiven !== null}
                 >
                   <ThumbsUp className="h-5 w-5" />
                 </Button>
+                {currentQa.likes !== undefined && <span className="text-sm font-medium">{currentQa.likes}</span>}
 
                 <Button
                   variant={
                     feedbackGiven === "bad" ? "destructive" : "outline"
                   }
                   size="icon"
-                  onClick={() => {
-                    setFeedbackGiven("bad");
-                    setIsFeedbackDialogOpen(true);
-                  }}
+                  onClick={() => handleVote('dislike')}
+                  disabled={feedbackGiven !== null}
                 >
                   <ThumbsDown className="h-5 w-5" />
                 </Button>
+                {currentQa.dislikes !== undefined && <span className="text-sm font-medium">{currentQa.dislikes}</span>}
               </div>
             </div>
           </CardContent>

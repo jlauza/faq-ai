@@ -1,3 +1,4 @@
+
 // actions.ts
 'use server';
 
@@ -22,6 +23,9 @@ const feedbackSchema = z.object({
 export type QuestionState = {
   question?: string;
   answer?: string;
+  id?: string;
+  likes?: number;
+  dislikes?: number;
   error?: string;
 };
 
@@ -44,7 +48,13 @@ export async function submitQuestion(
   try {
     const result = await generateAnswerFromQuestion({ question });
     console.log(result);
-    return { question, answer: result.answer };
+    return { 
+      question, 
+      answer: result.answer,
+      id: result.id,
+      likes: result.likes,
+      dislikes: result.dislikes,
+    };
   } catch (e) {
     console.error(e);
     return {

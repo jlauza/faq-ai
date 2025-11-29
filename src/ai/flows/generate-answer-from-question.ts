@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -52,6 +53,9 @@ export type GenerateAnswerFromQuestionInput = z.infer<typeof GenerateAnswerFromQ
 
 const GenerateAnswerFromQuestionOutputSchema = z.object({
   answer: z.string().describe('The AI-generated answer to the question.'),
+  id: z.string().optional().describe('The ID of the source FAQ.'),
+  likes: z.number().optional().describe('The number of likes for the source FAQ.'),
+  dislikes: z.number().optional().describe('The number of dislikes for the source FAQ.'),
 });
 export type GenerateAnswerFromQuestionOutput = z.infer<typeof GenerateAnswerFromQuestionOutputSchema>;
 
@@ -63,16 +67,21 @@ export async function generateAnswerFromQuestion(
 
 const prompt = ai.definePrompt({
   name: 'generateAnswerFromQuestionPrompt',
-  input: {schema: GenerateAnswerFromQuestionInputSchema},
-  output: {schema: GenerateAnswerFromQuestionOutputSchema},
+  input: {schema: z.object({question: z.string()})},
+  output: {
+    schema: z.object({
+      answer: z.string().describe('The AI-generated answer to the question.'),
+      sourceId: z.string().optional().describe('The ID of the most relevant source FAQ document.'),
+    }),
+  },
   tools: [getRelevantInformation],
-  prompt: `Answer the following question using the relevant information provided by the getRelevantInformation tool.
+  prompt: `Answer the following question using the relevant information provided by the getRelevantInformation tool. Also provide the ID of the source FAQ that was most relevant to the question.
 
 Question: {{{question}}}
-
-Answer: `,
-  system: `You are an AI assistant that answers questions based on retrieved information. Use the getRelevantInformation tool to find the most up-to-date information related to the question. The information is a JSON string of FAQs. Find the most relevant FAQ to answer the question. If no relevant FAQ is found, say that you could not find an answer.`, 
+`,
+  system: `You are an AI assistant that answers questions based on retrieved information. Use the getRelevantInformation tool to find the most up-to-date information related to the question. The information is a JSON string of FAQs. Find the most relevant FAQ to answer the question. If no relevant FAQ is found, say that you could not find an answer. Your primary goal is to provide a helpful answer, and secondarily to identify the single best source ID from the retrieved information.`, 
 });
+
 
 const generateAnswerFromQuestionFlow = ai.defineFlow(
   {
@@ -82,6 +91,17 @@ const generateAnswerFromQuestionFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await prompt(input);
-    return output!;
+    if (!output) {
+      throw new Error('AI did not return an output');
+    }
+
+    const sourceFaq = mockData.faqs.find(faq => faq.id === output.sourceId);
+
+    return {
+      answer: output.answer,
+      id: sourceFaq?.id,
+      likes: sourceFaq?.likes,
+      dislikes: sourceFaq?.dislikes,
+    };
   }
 );
