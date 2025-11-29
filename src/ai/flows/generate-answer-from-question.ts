@@ -10,7 +10,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import { fetchFaqs } from '@/lib/firebase';
+import mockData from '@/lib/mock-faqs.json';
 
 const GetRelevantInformationInputSchema = z.object({
   question: z
@@ -28,7 +28,7 @@ const getRelevantInformation = ai.defineTool(
     outputSchema: GetRelevantInformationOutputSchema,
   },
   async ({question}) => {
-    const faqs = await fetchFaqs();
+    const faqs = mockData.faqs;
     // Simple keyword matching to find relevant FAQs.
     const questionWords = question.toLowerCase().split(/\s+/);
     const relevantFaqs = faqs.filter(faq => {

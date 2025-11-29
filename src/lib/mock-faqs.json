@@ -1,0 +1,16 @@
+{
+  "faqs": [
+    {
+      "question": "How do I improve AI model accuracy?",
+      "answer": "Improving AI model accuracy involves several steps: ensuring high-quality and diverse training data, selecting the right model architecture, and fine-tuning hyperparameters like learning rate and batch size. Regular evaluation on a validation set is also crucial."
+    },
+    {
+      "question": "What is the difference between supervised and unsupervised learning?",
+      "answer": "Supervised learning uses labeled data to train a model, meaning each data point is tagged with a correct output. Unsupervised learning, on the other hand, works with unlabeled data to find hidden patterns or intrinsic structures."
+    },
+    {
+      "question": "How can I reset my password?",
+      "answer": "To reset your password, go to the login page and click the 'Forgot Password' link. You will receive an email with instructions on how to create a new password for your account."
+    }
+  ]
+}
