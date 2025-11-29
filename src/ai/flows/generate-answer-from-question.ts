@@ -11,7 +11,11 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import { fetchFaqs, getFaqById } from '@/lib/firebase/utils';
+// To switch back to Firebase, uncomment the line below and comment out the mock data import.
+// import { fetchFaqs, getFaqById } from '@/lib/firebase/utils';
+import mockData from '@/lib/mock-faqs.json';
+import { Faq } from '@/lib/firebase/utils';
+
 
 const GetRelevantInformationInputSchema = z.object({
   question: z
@@ -32,6 +36,26 @@ const getRelevantInformation = ai.defineTool(
     // In a real app, you might use a vector database for this.
     // For this example, we'll fetch all FAQs and let the model find the best one.
     try {
+      // --- MOCK DATA IMPLEMENTATION ---
+      // To switch to Firebase, comment out this block and uncomment the Firebase block below.
+      const faqs: Faq[] = mockData.faqs;
+      if (!faqs || faqs.length === 0) {
+        return "No relevant information found in the mock database.";
+      }
+      const questionWords = question.toLowerCase().split(/\s+/);
+      const relevantFaqs = faqs.filter(faq => {
+        const faqContent = (faq.question + ' ' + faq.answer).toLowerCase();
+        return questionWords.some(word => faqContent.includes(word));
+      });
+
+      if (relevantFaqs.length === 0) {
+        return "No relevant information found.";
+      }
+      return JSON.stringify(relevantFaqs);
+
+      // --- FIREBASE IMPLEMENTATION ---
+      // To switch back to Firebase, uncomment this block and comment out the mock data block above.
+      /*
       const faqs = await fetchFaqs();
       if (!faqs || faqs.length === 0) {
         return "No relevant information found in the database.";
@@ -49,9 +73,10 @@ const getRelevantInformation = ai.defineTool(
       
       // Convert the array of objects to a JSON string for the AI model.
       return JSON.stringify(relevantFaqs);
+      */
     } catch (error) {
-      console.error("Error fetching FAQs from Firestore:", error);
-      return "Failed to retrieve information from the database.";
+      console.error("Error fetching FAQs:", error);
+      return "Failed to retrieve information from the data source.";
     }
   }
 );
@@ -109,7 +134,15 @@ const generateAnswerFromQuestionFlow = ai.defineFlow(
     }
 
     try {
-      const sourceFaq = await getFaqById(output.sourceId);
+      // --- MOCK DATA IMPLEMENTATION ---
+      // To switch to Firebase, comment out this block and uncomment the Firebase block below.
+      const faqs: Faq[] = mockData.faqs;
+      const sourceFaq = faqs.find(faq => faq.id === output.sourceId);
+      
+      // --- FIREBASE IMPLEMENTATION ---
+      // To switch back to Firebase, uncomment this line and comment out the mock data block above.
+      // const sourceFaq = await getFaqById(output.sourceId);
+
       return {
         answer: output.answer,
         id: sourceFaq?.id,

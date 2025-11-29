@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useActionState, useEffect, useRef, useState, useOptimistic } from "react";
+import React, { useActionState, useEffect, useRef, useState, useOptimistic, startTransition } from "react";
 import { useFormStatus } from "react-dom";
 import { submitQuestion, submitFeedback, updateVote } from "@/app/actions";
 import { Textarea } from "@/components/ui/textarea";
@@ -168,7 +168,6 @@ export function FaqAiClient() {
     await updateVote(currentQa.id, type);
   }
 
-  const { startTransition } = React;
   const displayQa = optimisticQa || currentQa;
 
   return (
