@@ -1,4 +1,4 @@
-
+// actions.ts
 'use server';
 
 import { z } from 'zod';
@@ -43,6 +43,7 @@ export async function submitQuestion(
 
   try {
     const result = await generateAnswerFromQuestion({ question });
+    console.log(result);
     return { question, answer: result.answer };
   } catch (e) {
     console.error(e);

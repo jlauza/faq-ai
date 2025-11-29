@@ -1,22 +1,33 @@
 // src/lib/firebase.ts
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your Firebase config
+// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyB8DReInpGU3D0WXv8PHzi3iort41_E6ZY",
-  authDomain: "studio-9309129508-edeb4.firebaseapp.com",
-  projectId: "studio-9309129508-edeb4",
-  storageBucket: "studio-9309129508-edeb4.firebasestorage.app",
-  messagingSenderId: "211568479190",
-  appId: "1:211568479190:web:4425aec88fc2972d0b7277"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 export async function fetchFaqs() {
-  const faqsCol = collection(db, "faqs");
-  const snapshot = await getDocs(faqsCol);
-  return snapshot.docs.map(doc => doc.data());
+  try {
+    const faqsCol = collection(db, "faqs");
+    const snapshot = await getDocs(faqsCol);
+
+    console.log("FAQ DOCS:", snapshot.docs.length);
+
+    return snapshot.docs.map(doc => doc.data());
+  } catch (err) {
+    console.error("FIRESTORE READ FAILED:", err);
+    throw err;
+  }
 }
