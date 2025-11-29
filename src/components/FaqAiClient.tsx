@@ -3,7 +3,7 @@
 
 import React, { useActionState, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
-import { submitQuestion, submitFeedback } from "@/app/actions";
+import { submitQuestion, submitFeedback, updateVote } from "@/app/actions";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
@@ -133,10 +133,13 @@ export function FaqAiClient() {
   }, [feedbackState, currentQa]);
 
   const handleVote = (type: 'like' | 'dislike') => {
-    if (!currentQa) return;
+    if (!currentQa || !currentQa.id) return;
 
     // Prevent re-voting
     if (feedbackGiven) return;
+
+    // Call server action to update the "database"
+    updateVote(currentQa.id, type);
 
     if (type === 'like') {
       setFeedbackGiven('good');
@@ -146,8 +149,6 @@ export function FaqAiClient() {
       setCurrentQa(prev => prev ? {...prev, dislikes: (prev.dislikes ?? 0) + 1} : null);
       setIsFeedbackDialogOpen(true);
     }
-    // Here you would typically call a server action to persist the vote
-    // For now, we just update the local state.
   }
 
   return (

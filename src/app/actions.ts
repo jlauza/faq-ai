@@ -9,6 +9,7 @@ import {
 import {
   improveAnswerBasedOnFeedback,
 } from '@/ai/flows/improve-answer-based-on-feedback';
+import mockData from '@/lib/mock-faqs.json';
 
 const questionSchema = z.object({
   question: z.string().min(10, 'Please ask a more detailed question.'),
@@ -18,6 +19,11 @@ const feedbackSchema = z.object({
     question: z.string(),
     originalAnswer: z.string(),
     feedback: z.string().min(10, 'Please provide more detailed feedback.'),
+});
+
+const voteSchema = z.object({
+    id: z.string(),
+    type: z.enum(['like', 'dislike']),
 });
 
 export type QuestionState = {
@@ -96,4 +102,31 @@ export async function submitFeedback(
             error: 'Sorry, I encountered an error while improving the answer. Please try again.',
         };
     }
+}
+
+export async function updateVote(id: string, type: 'like' | 'dislike') {
+  const validatedFields = voteSchema.safeParse({ id, type });
+  if (!validatedFields.success) {
+    console.error('Invalid vote data');
+    return;
+  }
+
+  // NOTE: This is for demonstration only. 
+  // In a real app, you would update a database here, not a JSON file.
+  // This will not persist across server restarts or multiple users.
+  const faq = mockData.faqs.find(f => f.id === id);
+  if (faq) {
+    if (type === 'like') {
+      faq.likes += 1;
+    } else {
+      faq.dislikes += 1;
+    }
+    console.log(`Updated vote for ${id}:`, faq);
+  } else {
+    console.log(`FAQ with id ${id} not found.`);
+  }
+
+  // Since we can't reliably write to the file system on the server,
+  // we're just logging the change. The UI has already updated instantly.
+  return { success: true };
 }
