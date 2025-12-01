@@ -2,8 +2,19 @@ import { BrainCircuit } from 'lucide-react';
 import { FaqAiClient } from '@/components/FaqAiClient';
 import Image from 'next/image';
 import logo from "../public/assets/focused-logo.webp";
+import { FaqList } from '@/components/FaqList';
+import { fetchFaqs, Faq } from '@/lib/firebase/utils';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
-export default function Home() {
+export default async function Home() {
+  const faqs: Faq[] = await fetchFaqs();
+
   return (
     <main className="flex min-h-screen w-full flex-col items-center bg-background p-4 sm:p-8">
       <div className="flex w-full max-w-3xl flex-col items-center">
@@ -23,7 +34,6 @@ export default function Home() {
               <h3 className="font-headline font-bold tracking-tighter text-foreground sm:text-4xl text-3xl">
                 AI Powered FAQ
               </h3>
-              {/* <small className='text-sm text-center text-muted-foreground'>Created by Jayson Lauza</small> */}
               <p className="text-muted-foreground">
                 Your intelligent question-answering assistant
               </p>
@@ -31,6 +41,18 @@ export default function Home() {
           </div>
         </header>
         <FaqAiClient />
+
+        <Card className="w-full shadow-lg border-primary/20 mt-8">
+            <CardHeader>
+                <CardTitle>Frequently Asked Questions</CardTitle>
+                <CardDescription>
+                    Browse the most frequently asked questions.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <FaqList faqs={faqs} />
+            </CardContent>
+        </Card>
       </div>
     </main>
   );
