@@ -16,7 +16,7 @@ export default function Home() {
             className="mb-4"
           />
           <div className="flex items-center gap-4">
-            <div className="rounded-full bg-primary/10 p-3">
+            <div className="rounded-full bg-primary/10 p-3 hidden">
               <BrainCircuit className="h-10 w-10 text-primary" />
             </div>
             <div>
