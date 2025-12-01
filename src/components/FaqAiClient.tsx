@@ -180,7 +180,7 @@ export function FaqAiClient() {
             Ask a new question
           </CardTitle>
           <CardDescription>
-            Enter your Focused.com related question and our AI will generate an answer.
+            Enter your Focused.com related question and our AI will generate an answer for you.
           </CardDescription>
         </CardHeader>
 
