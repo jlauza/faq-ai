@@ -12,7 +12,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 // To switch back to Firebase, uncomment the line below and comment out the mock data import.
-// import { fetchFaqs, getFaqById } from '@/lib/firebase/utils';
+import { fetchFaqs, getFaqById, updateFaqVote } from '@/lib/firebase/utils';
 import mockData from '@/lib/mock-faqs.json';
 import { Faq } from '@/lib/firebase/utils';
 
@@ -38,6 +38,7 @@ const getRelevantInformation = ai.defineTool(
     try {
       // --- MOCK DATA IMPLEMENTATION ---
       // To switch to Firebase, comment out this block and uncomment the Firebase block below.
+      /*
       const faqs: Faq[] = mockData.faqs;
       if (!faqs || faqs.length === 0) {
         return "No relevant information found in the mock database.";
@@ -52,10 +53,11 @@ const getRelevantInformation = ai.defineTool(
         return "No relevant information found.";
       }
       return JSON.stringify(relevantFaqs);
+      */
 
       // --- FIREBASE IMPLEMENTATION ---
-      // To switch back to Firebase, uncomment this block and comment out the mock data block above.
-      /*
+      // To switch back to mock data, uncomment the block above and comment out this block.
+      
       const faqs = await fetchFaqs();
       if (!faqs || faqs.length === 0) {
         return "No relevant information found in the database.";
@@ -73,7 +75,7 @@ const getRelevantInformation = ai.defineTool(
       
       // Convert the array of objects to a JSON string for the AI model.
       return JSON.stringify(relevantFaqs);
-      */
+      
     } catch (error) {
       console.error("Error fetching FAQs:", error);
       return "Failed to retrieve information from the data source.";
@@ -136,12 +138,14 @@ const generateAnswerFromQuestionFlow = ai.defineFlow(
     try {
       // --- MOCK DATA IMPLEMENTATION ---
       // To switch to Firebase, comment out this block and uncomment the Firebase block below.
+      /*
       const faqs: Faq[] = mockData.faqs;
       const sourceFaq = faqs.find(faq => faq.id === output.sourceId);
+      */
       
       // --- FIREBASE IMPLEMENTATION ---
-      // To switch back to Firebase, uncomment this line and comment out the mock data block above.
-      // const sourceFaq = await getFaqById(output.sourceId);
+      // To switch back to mock data, uncomment the line above and comment out this block.
+      const sourceFaq = await getFaqById(output.sourceId);
 
       return {
         answer: output.answer,
