@@ -22,8 +22,8 @@ export default async function Home() {
           <Image
             src={logo}
             alt="FAQ-AI Logo"
-            width={120}
-            height={120}
+            width={150}
+            height={150}
             className="mb-4"
           />
           <div className="flex items-center gap-4">
