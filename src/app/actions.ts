@@ -10,7 +10,7 @@ import {
   improveAnswerBasedOnFeedback,
 } from '@/ai/flows/improve-answer-based-on-feedback';
 // To switch back to Firebase, uncomment the line below.
-// import { updateFaqVote } from '@/lib/firebase/utils';
+import { updateFaqVote } from '@/lib/firebase/utils';
 import { revalidatePath } from 'next/cache';
 
 const questionSchema = z.object({
@@ -116,17 +116,17 @@ export async function updateVote(id: string, type: 'like' | 'dislike') {
     // --- MOCK IMPLEMENTATION (for demonstration) ---
     // This doesn't actually update the JSON file, it just simulates the action.
     // The UI updates optimistically.
+    /*
     console.log(`Simulating vote update for id: ${id}, type: ${type}`);
     revalidatePath('/'); // This would refresh data if it were coming from a live source.
     return { success: true };
+    */
     
     // --- FIREBASE IMPLEMENTATION ---
     // To switch to Firebase, comment out the mock block above and uncomment this block.
-    /*
     await updateFaqVote(id, type);
     revalidatePath('/'); // This tells Next.js to refresh the data on the page
     return { success: true };
-    */
   } catch (error) {
     console.error(`Failed to update vote for ${id}:`, error);
     return { success: false, error: 'Failed to update vote in database' };
