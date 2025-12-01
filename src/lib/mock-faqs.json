@@ -21,6 +21,13 @@
       "answer": "Upload the files to Media Storage, copy and then paste the link in the Customize Website form page 4.",
       "likes": 0,
       "dislikes": 0
+    },
+    {
+      "id": "faq-4",
+      "question": "How do I add my client's logo in my testimonial page/section?",
+      "answer": "Go to your FBS account and upload your client's logo (if this hasn't done yet). Then on the side panel of the site look for the menu/link/tab that says Customize Website. Then, go to page 2 and look for the field that says Client # - Logo. Copy the image/logo link from the media storage and paste on the field.",
+      "likes": 0,
+      "dislikes": 0
     }
   ]
 }
