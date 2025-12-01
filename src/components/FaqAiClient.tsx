@@ -3,7 +3,7 @@
 
 import React, { useActionState, useEffect, useRef, useState, useOptimistic, startTransition } from "react";
 import { useFormStatus } from "react-dom";
-import { submitQuestion, submitFeedback, updateVote } from "@/app/actions";
+import { submitQuestion, updateVote } from "@/app/actions";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,14 +23,6 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 /* ---------------- Question and Answer Type ---------------- */
 interface QA {
@@ -63,26 +55,6 @@ function QuestionSubmitButton() {
   );
 }
 
-function FeedbackSubmitButton() {
-  const { pending } = useFormStatus();
-
-  return (
-    <Button type="submit" disabled={pending}>
-      {pending ? (
-        <>
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Submitting...
-        </>
-      ) : (
-        <>
-          <Sparkles className="mr-2 h-4 w-4" />
-          Improve Answer
-        </>
-      )}
-    </Button>
-  );
-}
-
 /* ---------------- Main Component ---------------- */
 
 export function FaqAiClient() {
@@ -92,10 +64,6 @@ export function FaqAiClient() {
     id: undefined,
     likes: undefined,
     dislikes: undefined,
-    error: undefined,
-  });
-  const [feedbackState, feedbackAction] = useActionState(submitFeedback, {
-    improvedAnswer: undefined,
     error: undefined,
   });
 
@@ -117,8 +85,6 @@ export function FaqAiClient() {
   const [feedbackGiven, setFeedbackGiven] =
     useState<"good" | "bad" | null>(null);
 
-  const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] = useState(false);
-
   const formRef = useRef<HTMLFormElement>(null);
 
   /* ---- Handle Server Answer ---- */
@@ -137,18 +103,6 @@ export function FaqAiClient() {
     }
   }, [questionState]);
 
-  /* ---- Handle Feedback Improvement ---- */
-  useEffect(() => {
-    if (feedbackState?.improvedAnswer && currentQa) {
-      setCurrentQa({
-        ...currentQa,
-        answer: feedbackState.improvedAnswer,
-      });
-      setIsFeedbackDialogOpen(false);
-      setFeedbackGiven("good");
-    }
-  }, [feedbackState, currentQa]);
-
   const handleVote = async (type: 'like' | 'dislike') => {
     if (!currentQa || !currentQa.id || feedbackGiven) return;
 
@@ -161,7 +115,6 @@ export function FaqAiClient() {
       setFeedbackGiven('good');
     } else {
       setFeedbackGiven('bad');
-      setIsFeedbackDialogOpen(true);
     }
     
     // Call server action to update the database
@@ -263,61 +216,6 @@ export function FaqAiClient() {
             </div>
           </CardContent>
         </Card>
-      )}
-
-      {/* FEEDBACK DIALOG */}
-      {currentQa && (
-        <Dialog
-          open={isFeedbackDialogOpen}
-          onOpenChange={setIsFeedbackDialogOpen}
-        >
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Provide Feedback</DialogTitle>
-              <DialogDescription>
-                Tell us what went wrong so we can improve the answer.
-              </DialogDescription>
-            </DialogHeader>
-
-            <form action={feedbackAction} className="space-y-4">
-              <input
-                type="hidden"
-                name="question"
-                value={currentQa.question}
-              />
-              <input
-                type="hidden"
-                name="originalAnswer"
-                value={currentQa.answer}
-              />
-
-              <Textarea
-                name="feedback"
-                placeholder="What was wrong?"
-                required
-              />
-
-              {feedbackState?.error && (
-                <Alert variant="destructive">
-                  <AlertDescription>
-                    {feedbackState.error}
-                  </AlertDescription>
-              </Alert>
-              )}
-
-              <DialogFooter>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => setIsFeedbackDialogOpen(false)}
-                >
-                  Cancel
-                </Button>
-                <FeedbackSubmitButton />
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
       )}
     </div>
   );
