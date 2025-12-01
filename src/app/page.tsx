@@ -8,7 +8,7 @@ export default function Home() {
       <div className="flex w-full max-w-3xl flex-col items-center">
         <header className="mb-8 flex flex-col items-center gap-4 text-center">
           <Image
-            src="/focused-logo.webp"
+            src="/assets/focused-logo.webp"
             alt="FAQ-AI Logo"
             width={120}
             height={120}
