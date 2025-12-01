@@ -188,7 +188,7 @@ export function FaqAiClient() {
           <form ref={formRef} action={questionAction} className="space-y-4">
             <Textarea
               name="question"
-              placeholder="e.g., How do I improve the accuracy of my AI model?"
+              placeholder="e.g. How do I improve the accuracy of my AI model?"
               className="min-h-[100px]"
               required
             />
