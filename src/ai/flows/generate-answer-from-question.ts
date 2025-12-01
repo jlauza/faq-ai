@@ -59,6 +59,7 @@ const getRelevantInformation = ai.defineTool(
       // To switch back to mock data, uncomment the block above and comment out this block.
       
       const faqs = await fetchFaqs();
+
       if (!faqs || faqs.length === 0) {
         return "No relevant information found in the database.";
       }
