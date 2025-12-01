@@ -43,7 +43,7 @@ const prompt = ai.definePrompt({
   Feedback: {{{feedback}}}
 
   Based on the user feedback, improve the original answer to be more accurate and helpful. Return only the improved answer. Do not repeat the question or feedback in your answer.
-  Improved Answer:`, // Removed the extraneous quotes.
+  Improved Answer:`,
 });
 
 const improveAnswerBasedOnFeedbackFlow = ai.defineFlow(
