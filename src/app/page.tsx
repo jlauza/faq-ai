@@ -1,6 +1,7 @@
 import { BrainCircuit } from 'lucide-react';
 import { FaqAiClient } from '@/components/FaqAiClient';
 import Image from 'next/image';
+import logo from "../public/assets/focused-logo.webp";
 
 export default function Home() {
   return (
@@ -8,7 +9,7 @@ export default function Home() {
       <div className="flex w-full max-w-3xl flex-col items-center">
         <header className="mb-8 flex flex-col items-center gap-4 text-center">
           <Image
-            src="/assets/focused-logo.webp"
+            src={logo}
             alt="FAQ-AI Logo"
             width={120}
             height={120}
@@ -19,9 +20,9 @@ export default function Home() {
               <BrainCircuit className="h-10 w-10 text-primary" />
             </div>
             <div>
-              <h1 className="font-headline text-4xl font-bold tracking-tighter text-foreground sm:text-5xl">
-                FAQ-AI
-              </h1>
+              <h3 className="font-headline font-bold tracking-tighter text-foreground sm:text-4xl text-3xl">
+                AI Powered FAQ
+              </h3>
               {/* <small className='text-sm text-center text-muted-foreground'>Created by Jayson Lauza</small> */}
               <p className="text-muted-foreground">
                 Your intelligent question-answering assistant
