@@ -68,9 +68,11 @@ export function FaqItem({ faq, isAiAnswer = false }: FaqItemProps) {
           >
             <ThumbsUp className="h-5 w-5" />
           </Button>
-          <span className="text-sm font-medium tabular-nums min-w-[1rem]">
-            {optimisticFaq.likes}
-          </span>
+          {!isAiAnswer && (
+            <span className="text-sm font-medium tabular-nums min-w-[1rem]">
+              {optimisticFaq.likes}
+            </span>
+          )}
 
           <Button
             variant={feedbackGiven === 'dislike' ? 'destructive' : 'outline'}
@@ -81,9 +83,11 @@ export function FaqItem({ faq, isAiAnswer = false }: FaqItemProps) {
           >
             <ThumbsDown className="h-5 w-5" />
           </Button>
-          <span className="text-sm font-medium tabular-nums min-w-[1rem]">
-            {optimisticFaq.dislikes}
-          </span>
+          {!isAiAnswer && (
+            <span className="text-sm font-medium tabular-nums min-w-[1rem]">
+              {optimisticFaq.dislikes}
+            </span>
+          )}
         </div>
       </div>
     </div>
