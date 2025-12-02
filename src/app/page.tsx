@@ -11,12 +11,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export default async function Home() {
   const faqs: Faq[] = await fetchFaqs();
 
   return (
     <main className="flex min-h-screen w-full flex-col items-center bg-background p-4 sm:p-8">
+       <div className="absolute top-4 right-4">
+          <ThemeToggle />
+        </div>
       <div className="flex w-full max-w-3xl flex-col items-center">
         <header className="mb-8 flex flex-col items-center gap-4 text-center">
           <Image
