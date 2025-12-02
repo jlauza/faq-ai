@@ -56,7 +56,7 @@ export function FaqItem({ faq, isAiAnswer = false }: FaqItemProps) {
 
       <Separator />
 
-      <div className="flex flex-col items-center gap-4 sm:flex-row">
+      <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm font-medium">Was this answer helpful?</p>
         <div className="flex items-center gap-2">
           <Button
