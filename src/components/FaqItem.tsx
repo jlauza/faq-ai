@@ -41,7 +41,7 @@ export function FaqItem({ faq, isAiAnswer = false }: FaqItemProps) {
 
   return (
     <div className="space-y-4">
-       <div>
+       <div className='sm:text-left text-center'>
         {!isAiAnswer && <p className="whitespace-pre-wrap">{optimisticFaq.answer}</p>}
         {isAiAnswer && (
              <div>
