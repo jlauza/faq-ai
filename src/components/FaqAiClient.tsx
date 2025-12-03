@@ -18,12 +18,9 @@ import {
   Loader2,
   Send,
   Bot,
-  History,
-  Trash2,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { FaqItem } from "./FaqItem";
-import { RecentFaqList } from "./RecentFaqList";
 
 
 /* ---------------- Buttons ---------------- */
@@ -61,27 +58,14 @@ export function FaqAiClient() {
   });
 
   const [showAnswer, setShowAnswer] = useState(false);
-  const [recentQuestions, setRecentQuestions] = useState<QuestionState[]>([]);
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     if (questionState?.answer && questionState.question) {
       setShowAnswer(true);
-      setRecentQuestions(prev => {
-        const newQuestion = { ...questionState, id: questionState.id || `temp-${Date.now()}` };
-        const updatedQuestions = [newQuestion, ...prev];
-        if (updatedQuestions.length > 5) {
-          return updatedQuestions.slice(0, 5);
-        }
-        return updatedQuestions;
-      });
       formRef.current?.reset();
     }
   }, [questionState]);
-
-  const handleClearHistory = () => {
-    setRecentQuestions([]);
-  };
 
 
   return (
@@ -155,29 +139,6 @@ export function FaqAiClient() {
                 </div>
             )}
           </CardContent>
-        </Card>
-      )}
-
-      {/* RECENT QUESTIONS */}
-      {recentQuestions.length > 0 && (
-         <Card className="w-full shadow-lg border-primary/20 mt-8">
-            <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle className="flex items-center gap-2">
-                      <History className="h-6 w-6 text-primary" />
-                      Recent Questions
-                  </CardTitle>
-                  <CardDescription>
-                      The last 5 questions you asked the AI.
-                  </CardDescription>
-                </div>
-                <Button variant="ghost" size="icon" onClick={handleClearHistory} aria-label="Clear recent questions">
-                    <Trash2 className="h-5 w-5" />
-                </Button>
-            </CardHeader>
-            <CardContent>
-                <RecentFaqList faqs={recentQuestions} />
-            </CardContent>
         </Card>
       )}
     </div>
