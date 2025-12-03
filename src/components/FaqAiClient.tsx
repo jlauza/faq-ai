@@ -65,6 +65,10 @@ export function FaqAiClient() {
       setShowAnswer(true);
       formRef.current?.reset();
     }
+    // Also show the "answer" card if there's a "not found" error, but without an answer inside.
+     if (questionState?.error && !questionState?.answer) {
+      setShowAnswer(false);
+    }
   }, [questionState]);
 
 
@@ -92,7 +96,7 @@ export function FaqAiClient() {
               onChange={() => setShowAnswer(false)} // Hide answer when typing new question
             />
 
-            {questionState?.error && !questionState.answer && (
+            {questionState?.error && (
               <Alert variant="destructive">
                 <AlertDescription>{questionState.error}</AlertDescription>
               </Alert>
