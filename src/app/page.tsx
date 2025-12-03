@@ -21,10 +21,10 @@ export default async function Home() {
   return (
     <main className="flex min-h-screen w-full flex-col items-center bg-background p-4 sm:p-8">
        <div className="absolute top-4 right-4 flex items-center gap-2">
+          <ThemeToggle />
           <Link href="/login">
             <Button variant="outline">Login</Button>
           </Link>
-          <ThemeToggle />
         </div>
       <div className="flex w-full max-w-3xl flex-col items-center">
         <Header />
