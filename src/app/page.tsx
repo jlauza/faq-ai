@@ -13,7 +13,7 @@ import { Header } from '@/components/Header';
 import { FaqAiClient } from '@/components/FaqAiClient';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
 
 
@@ -40,6 +40,9 @@ export default async function Home() {
                 </Button>
               </SheetTrigger>
               <SheetContent>
+                <SheetHeader>
+                  <SheetTitle className="sr-only">Menu</SheetTitle>
+                </SheetHeader>
                 <div className="flex flex-col gap-4 py-8">
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Toggle Theme</span>
