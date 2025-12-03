@@ -20,12 +20,13 @@ const voteSchema = z.object({
 });
 
 export type QuestionState = {
+  status: 'success' | 'error' | 'not_found' | 'idle';
   question?: string;
   answer?: string;
   id?: string;
   likes?: number;
   dislikes?: number;
-  error?: string;
+  message?: string; // For errors or other info
 };
 
 export async function submitQuestion(
@@ -38,7 +39,8 @@ export async function submitQuestion(
 
   if (!validatedFields.success) {
     return {
-      error: validatedFields.error.flatten().fieldErrors.question?.join(', '),
+      status: 'error',
+      message: validatedFields.error.flatten().fieldErrors.question?.join(', '),
     };
   }
   
@@ -50,12 +52,14 @@ export async function submitQuestion(
     // If the answer indicates no SOP was found, treat it as an "error" for UI purposes
     if (result.answer === "There's no SOP recorded for this request yet.") {
         return {
+            status: 'not_found',
             question,
-            error: result.answer,
+            message: result.answer,
         }
     }
 
     return { 
+      status: 'success',
       question, 
       answer: result.answer,
       id: result.id,
@@ -65,8 +69,9 @@ export async function submitQuestion(
   } catch (e) {
     console.error(e);
     return {
+      status: 'error',
       question,
-      error: 'Sorry, I encountered a system error. Please try again.',
+      message: 'Sorry, I encountered a system error. Please try again.',
     };
   }
 }

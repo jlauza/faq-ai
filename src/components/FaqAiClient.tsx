@@ -13,11 +13,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Loader2,
   Send,
   Bot,
+  Info,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { FaqItem } from "./FaqItem";
@@ -47,26 +48,29 @@ function QuestionSubmitButton() {
 
 /* ---------------- Main Component ---------------- */
 
+const initialState: QuestionState = {
+  status: 'idle',
+  question: undefined,
+  answer: undefined,
+  id: undefined,
+  likes: undefined,
+  dislikes: undefined,
+  message: undefined,
+};
+
 export function FaqAiClient() {
-  const [questionState, questionAction] = useActionState(submitQuestion, {
-    question: undefined,
-    answer: undefined,
-    id: undefined,
-    likes: undefined,
-    dislikes: undefined,
-    error: undefined,
-  });
+  const [questionState, questionAction] = useActionState(submitQuestion, initialState);
 
   const [showAnswer, setShowAnswer] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
-    if (questionState?.answer && questionState.question) {
+    // Show the answer card if the submission was successful
+    if (questionState?.status === 'success' && questionState.answer) {
       setShowAnswer(true);
       formRef.current?.reset();
-    }
-    // Also show the "answer" card if there's a "not found" error, but without an answer inside.
-     if (questionState?.error && !questionState?.answer) {
+    } else {
+      // Hide the answer card for any other status (e.g., error, not_found, or new question)
       setShowAnswer(false);
     }
   }, [questionState]);
@@ -93,14 +97,22 @@ export function FaqAiClient() {
               placeholder="e.g. How do I improve the accuracy of my AI model?"
               className="min-h-[100px]"
               required
-              onChange={() => setShowAnswer(false)} // Hide answer when typing new question
             />
 
-            {questionState?.error && (
+            {questionState?.status === 'error' && questionState.message && (
               <Alert variant="destructive">
-                <AlertDescription>{questionState.error}</AlertDescription>
+                <AlertDescription>{questionState.message}</AlertDescription>
               </Alert>
             )}
+            
+            {questionState?.status === 'not_found' && questionState.message && (
+              <Alert variant="default" className="bg-accent/50">
+                 <Info className="h-4 w-4" />
+                <AlertTitle>Not Found</AlertTitle>
+                <AlertDescription>{questionState.message}</AlertDescription>
+              </Alert>
+            )}
+
 
             <div className="flex justify-end">
               <QuestionSubmitButton />
