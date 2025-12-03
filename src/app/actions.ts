@@ -46,6 +46,15 @@ export async function submitQuestion(
 
   try {
     const result = await generateAnswerFromQuestion({ question });
+    
+    // If the answer indicates no SOP was found, treat it as an "error" for UI purposes
+    if (result.answer === "There's no SOP recorded for this request yet.") {
+        return {
+            question,
+            error: result.answer,
+        }
+    }
+
     return { 
       question, 
       answer: result.answer,
@@ -57,7 +66,7 @@ export async function submitQuestion(
     console.error(e);
     return {
       question,
-      error: 'Sorry, I encountered an error while generating an answer. Please try again.',
+      error: 'Sorry, I encountered a system error. Please try again.',
     };
   }
 }

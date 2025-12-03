@@ -130,9 +130,9 @@ const generateAnswerFromQuestionFlow = ai.defineFlow(
   async input => {
     const {output} = await prompt(input);
     if (!output || !output.sourceId) {
-      // If the AI can't find an answer, return its response directly.
+      // If the AI can't find an answer, return a specific message.
       return {
-        answer: output?.answer || "I'm sorry, but I couldn't find an answer to your question in the available information.",
+        answer: "There's no SOP recorded for this request yet.",
       };
     }
 
