@@ -11,6 +11,8 @@ import {
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { Header } from '@/components/Header';
 import { FaqAiClient } from '@/components/FaqAiClient';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 
 export default async function Home() {
@@ -18,7 +20,10 @@ export default async function Home() {
 
   return (
     <main className="flex min-h-screen w-full flex-col items-center bg-background p-4 sm:p-8">
-       <div className="absolute top-4 right-4">
+       <div className="absolute top-4 right-4 flex items-center gap-2">
+          <Link href="/login">
+            <Button variant="outline">Login</Button>
+          </Link>
           <ThemeToggle />
         </div>
       <div className="flex w-full max-w-3xl flex-col items-center">
