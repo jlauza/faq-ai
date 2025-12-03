@@ -1,3 +1,4 @@
+
 import { FaqList } from '@/components/FaqList';
 import { fetchFaqs, Faq } from '@/lib/firebase/utils';
 import {
@@ -13,7 +14,7 @@ import { FaqAiClient } from '@/components/FaqAiClient';
 
 
 export default async function Home() {
-  const faqs: Faq[] = await fetchFaqs();
+  const faqs: Faq[] = (await fetchFaqs()).slice(0, 5);
 
   return (
     <main className="flex min-h-screen w-full flex-col items-center bg-background p-4 sm:p-8">
