@@ -81,8 +81,11 @@ export async function updateVote(id: string, type: 'like' | 'dislike') {
     
     // --- FIREBASE IMPLEMENTATION ---
     // To switch to Firebase, comment out the mock block above and uncomment this block.
-    await updateFaqVote(id, type);
-    revalidatePath('/'); // This tells Next.js to refresh the data on the page
+    // We only update votes for real FAQs, not temporary client-side ones
+    if (!id.startsWith('temp-')) {
+      await updateFaqVote(id, type);
+      revalidatePath('/'); // This tells Next.js to refresh the data on the page
+    }
     return { success: true };
   } catch (error) {
     console.error(`Failed to update vote for ${id}:`, error);

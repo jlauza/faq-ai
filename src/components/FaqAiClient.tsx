@@ -3,7 +3,7 @@
 
 import React, { useActionState, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
-import { submitQuestion } from "@/app/actions";
+import { submitQuestion, QuestionState } from "@/app/actions";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,9 +18,11 @@ import {
   Loader2,
   Send,
   Bot,
+  History,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { FaqItem } from "./FaqItem";
+import { RecentFaqList } from "./RecentFaqList";
 
 
 /* ---------------- Buttons ---------------- */
@@ -58,11 +60,20 @@ export function FaqAiClient() {
   });
 
   const [showAnswer, setShowAnswer] = useState(false);
+  const [recentQuestions, setRecentQuestions] = useState<QuestionState[]>([]);
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
-    if (questionState?.answer) {
+    if (questionState?.answer && questionState.question) {
       setShowAnswer(true);
+      setRecentQuestions(prev => {
+        const newQuestion = { ...questionState, id: questionState.id || `temp-${Date.now()}` };
+        const updatedQuestions = [newQuestion, ...prev];
+        if (updatedQuestions.length > 5) {
+          return updatedQuestions.slice(0, 5);
+        }
+        return updatedQuestions;
+      });
       formRef.current?.reset();
     }
   }, [questionState]);
@@ -139,6 +150,24 @@ export function FaqAiClient() {
                 </div>
             )}
           </CardContent>
+        </Card>
+      )}
+
+      {/* RECENT QUESTIONS */}
+      {recentQuestions.length > 0 && (
+         <Card className="w-full shadow-lg border-primary/20 mt-8">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <History className="h-6 w-6 text-primary" />
+                    Recent Questions
+                </CardTitle>
+                <CardDescription>
+                    The last 5 questions you asked the AI.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <RecentFaqList faqs={recentQuestions} />
+            </CardContent>
         </Card>
       )}
     </div>
