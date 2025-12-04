@@ -139,7 +139,7 @@ export function FaqAiClient() {
             <Separator />
 
             {questionState.id ? (
-                 <FaqItem faq={{
+                 <FaqItem key={questionState.id} faq={{
                     id: questionState.id,
                     question: questionState.question || "",
                     answer: questionState.answer,
