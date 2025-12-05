@@ -68,7 +68,7 @@ export default async function Home() {
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <FaqList faqs={faqs} />
+                <FaqList faqs={faqs.slice(0, 6)} />
             </CardContent>
         </Card>
       </div>
